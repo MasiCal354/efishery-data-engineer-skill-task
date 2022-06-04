@@ -1,18 +1,23 @@
 from datetime import timedelta
 from typing import Any, Dict, List
-from pendulum import datetime
-from airflow import DAG
+
+from airflow.models import TaskInstance
 from airflow.operators.empty import EmptyOperator
 from airflow.providers.postgres.operators.postgres import PostgresHook, PostgresOperator
-from airflow.models import TaskInstance
 from airflow.utils.context import Context
+from pendulum import datetime
 from psycopg2.sql import SQL, Identifier
+
+from airflow import DAG
 
 
 class PostgresGetLoadStateOperator(PostgresOperator):
     ui_color: str = "#dcdcdc"
-    def execute(self, context: 'Context'):
-        self.hook = PostgresHook(postgres_conn_id=self.postgres_conn_id, schema=self.database)
+
+    def execute(self, context: "Context"):
+        self.hook = PostgresHook(
+            postgres_conn_id=self.postgres_conn_id, schema=self.database
+        )
         if self.runtime_parameters:
             final_sql = []
             sql_param = {}
@@ -28,13 +33,19 @@ class PostgresGetLoadStateOperator(PostgresOperator):
                 final_sql.append(SQL(self.sql))
             else:
                 final_sql.extend(list(map(SQL, self.sql)))
-            return self.hook.get_first(final_sql, parameters=sql_param)[0].isoformat()
+            return self.hook.get_first(final_sql, parameters=sql_param)[
+                0
+            ].isoformat()
         else:
-            return self.hook.get_first(self.sql, parameters=self.parameters)[0].isoformat()
+            return self.hook.get_first(self.sql, parameters=self.parameters)[
+                0
+            ].isoformat()
+
 
 def alert_failure(context: Context):
     task_instance: TaskInstance = context["task_instance"]
     return task_instance
+
 
 default_args: Dict[str, Any] = {
     "owner": "faisal",
@@ -45,7 +56,7 @@ default_args: Dict[str, Any] = {
     "retry_delay": timedelta(minutes=1),
     "retry_exponential_backoff": True,
     "max_retry_delay": timedelta(days=1),
-    "do_xcom_push": True
+    "do_xcom_push": True,
 }
 
 
@@ -102,37 +113,33 @@ with DAG(
     default_args=default_args,
     tags=["pipeline"],
 ) as dag:
-    start: EmptyOperator = EmptyOperator(
-        task_id="start"
-    )
+    start: EmptyOperator = EmptyOperator(task_id="start")
 
     get_load_states: List[PostgresGetLoadStateOperator] = [
         PostgresGetLoadStateOperator(
             task_id="get_orders_load_state",
             do_xcom_push=True,
             postgres_conn_id="efishery_task_db",
-            sql=get_load_state_query.format("order_date_id")
+            sql=get_load_state_query.format("order_date_id"),
         ),
         PostgresGetLoadStateOperator(
             task_id="get_invoices_load_state",
             do_xcom_push=True,
             postgres_conn_id="efishery_task_db",
-            sql=get_load_state_query.format("invoice_date_id")
+            sql=get_load_state_query.format("invoice_date_id"),
         ),
         PostgresGetLoadStateOperator(
             task_id="get_payments_load_state",
             do_xcom_push=True,
             postgres_conn_id="efishery_task_db",
-            sql=get_load_state_query.format("payment_date_id")
+            sql=get_load_state_query.format("payment_date_id"),
         ),
     ]
     insert_select: PostgresOperator = PostgresOperator(
         task_id="insert_select",
         postgres_conn_id="efishery_task_db",
-        sql=insert_select_query
+        sql=insert_select_query,
     )
-    end: EmptyOperator = EmptyOperator(
-        task_id="end"
-    )
-    
+    end: EmptyOperator = EmptyOperator(task_id="end")
+
     start >> get_load_states >> insert_select >> end

@@ -1,3 +1,2 @@
-apache-airflow[postgresql]>=2.3.1
+apache-airflow[postgres]>=2.3.1
 docker-compose>=1.29.2
-pre-commit>=2.19.0
