@@ -35,6 +35,9 @@ Open `config.py` to adjust `MIN_KOMODITAS_COUNT_QUANTILE` and `MIN_KOMODITAS_MAT
 ## Git Log
 
 ```log
+19a474b7ecd02041b570254086f27f05ba1b07ee (HEAD -> main) add more docs
+1b645acdb03aebed7a6a18a7e3275471577f4318 (origin/main, origin/HEAD) Completing Documentations
+886772fc9168633986c4234e47ad9d907273b31b add documentation
 57535960e2e7afb7ac85d10dac82bd208e791550 tidy up requirements
 ef98b1e08eeff6d5535058124fc5eaf6a31f3b09 implement on run.sh
 9fe79c6a5d5883b6b26c8a4ba4a01b2c1801a6e2 run pre-commit
