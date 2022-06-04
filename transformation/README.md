@@ -43,3 +43,7 @@ ef98b1e08eeff6d5535058124fc5eaf6a31f3b09 implement on run.sh
 afbd24d995f2d48a599978af0f451398a0c05693 solve question 1
 2d79d26df5aba04ebd187e86b3b95a0612032b99 Initial commit
 ```
+
+## Reasoning
+
+This implementation is more like statistical data cleansing by implementing word count on each word and use them as a basis on either keeping the word or replacing them based on similarity.

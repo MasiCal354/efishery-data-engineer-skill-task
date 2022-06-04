@@ -49,16 +49,16 @@ x-airflow-common:
   environment:
     &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor
-    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_DB_USER:-airflow}:${POSTGRES_DB_PASSWORD:-airflow}@postgres/airflow
     # For backward compatibility, with Airflow <2.3
-    AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
-    AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:airflow@postgres/airflow
+    AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_DB_USER:-airflow}:${POSTGRES_DB_PASSWORD:-airflow}@postgres/airflow
+    AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://${POSTGRES_DB_USER:-airflow}:${POSTGRES_DB_PASSWORD:-airflow}@postgres/airflow
     AIRFLOW__CELERY__BROKER_URL: redis://:@redis:6379/0
     AIRFLOW__CORE__FERNET_KEY: ''
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth'
-    AIRFLOW_CONN_EFISHERY_TASK_DB: ${EFISHERY_TASK_DB_URL:-postgresql+psycopg2://admin:admin@efishery_task_db:5432/efishery_task}
+    AIRFLOW_CONN_EFISHERY_TASK_DB: postgresql+psycopg2://${EFISHERY_TASK_DB_USER:-admin}:${EFISHERY_TASK_DB_PASSWORD:-admin}@efishery_task_db:5432/efishery_task
     _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-apache-airflow-providers-postgres}
   volumes:
     - ./dags:/opt/airflow/dags
@@ -76,13 +76,13 @@ services:
   postgres:
     image: postgres:13
     environment:
-      POSTGRES_USER: airflow
-      POSTGRES_PASSWORD: airflow
+      POSTGRES_USER: ${POSTGRES_DB_USER:-airflow}
+      POSTGRES_PASSWORD: ${POSTGRES_DB_PASSWORD:-airflow}
       POSTGRES_DB: airflow
     volumes:
       - postgres-db-volume:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "airflow"]
+      test: ["CMD", "pg_isready", "-d", "airflow", "-U", "${POSTGRES_DB_USER:-airflow}"]
       interval: 5s
       retries: 5
     restart: always
