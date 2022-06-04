@@ -46,4 +46,4 @@ afbd24d995f2d48a599978af0f451398a0c05693 solve question 1
 
 ## Reasoning
 
-This implementation is more like statistical data cleansing by implementing word count on each word and use them as a basis on either keeping the word or replacing them based on similarity.
+Komoditas cleansng on this implementation is more like statistical data cleansing by implementing word count on each word and use them as a basis on either keeping the word or replacing them based on similarity. For berat cleansing, I want to keep numbers only and ordering the in such a way if the number of berat similar to number of komoditas we can map them in order, else we can pick the first value or None if there is no number available on the berat. This implementation can be improved as it might ignore some corner cases like berat without number but actually exist like sekilo or setengah kilo, some keywords like kecuali can also be implemented. Those aren't implemented because of time limitation but the author is aware of the case.
