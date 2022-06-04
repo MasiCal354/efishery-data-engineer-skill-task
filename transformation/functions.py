@@ -36,11 +36,11 @@ def numeric_only(s: str) -> str:
 
 
 def get_komoditas_mapping(
-    df: DataFrame,
+    dataframe: DataFrame,
     min_komoditas_count_quantile: float,
     min_komoditas_matching_ratio: float,
 ) -> Dict[str, str]:
-    dict_komoditas = dict(Counter(df["vector_komoditas"].sum()))
+    dict_komoditas = dict(Counter(dataframe["vector_komoditas"].sum()))
     komoditas_mapping = {}
 
     series_komoditas = Series(dict_komoditas)

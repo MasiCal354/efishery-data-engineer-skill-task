@@ -14,28 +14,27 @@ from functions import (
 from pandas import DataFrame, read_json
 from pipeline import apply_pipeline
 
-parser: ArgumentParser = ArgumentParser()
-parser.add_argument("--file-path", help="File Path to the json data input")
-args: Namespace = parser.parse_args()
 
+def main(args: Namespace):
+    dataframe: DataFrame = read_json(args.file_path)
 
-def main():
-    df: DataFrame = read_json(args.file_path)
-
-    df = apply_pipeline(df, *PIPELINE_ARGS)
+    dataframe = apply_pipeline(dataframe, *PIPELINE_ARGS)
 
     komoditas_mapping = get_komoditas_mapping(
-        df, MIN_KOMODITAS_COUNT_QUANTILE, MIN_KOMODITAS_MATCHING_RATIO
+        dataframe, MIN_KOMODITAS_COUNT_QUANTILE, MIN_KOMODITAS_MATCHING_RATIO
     )
 
-    df["vector_komoditas"] = df["vector_komoditas"].apply(
+    dataframe["vector_komoditas"] = dataframe["vector_komoditas"].apply(
         lambda x: [komoditas_mapping.get(i) for i in x]
     )
 
-    total_berat_komoditas: Dict[str, int] = get_total_berat_komoditas(df)
+    total_berat_komoditas: Dict[str, int] = get_total_berat_komoditas(dataframe)
 
     show_total_berat_komoditas(total_berat_komoditas)
 
 
 if __name__ == "__main__":
-    main()
+    parser: ArgumentParser = ArgumentParser()
+    parser.add_argument("--file-path", help="File Path to the json data input")
+    args: Namespace = parser.parse_args()
+    main(args)
