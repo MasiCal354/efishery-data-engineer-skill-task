@@ -34,12 +34,19 @@ def numeric_only(s: str) -> str:
     s = s.strip()
     return s
 
-def get_komoditas_mapping(df: DataFrame, min_komoditas_count_quantile: float, min_komoditas_matching_ratio: float) -> Dict[str, str]:
+
+def get_komoditas_mapping(
+    df: DataFrame,
+    min_komoditas_count_quantile: float,
+    min_komoditas_matching_ratio: float,
+) -> Dict[str, str]:
     dict_komoditas = dict(Counter(df["vector_komoditas"].sum()))
     komoditas_mapping = {}
 
     series_komoditas = Series(dict_komoditas)
-    quantile_komoditas = series_komoditas.quantile(min_komoditas_count_quantile)
+    quantile_komoditas = series_komoditas.quantile(
+        min_komoditas_count_quantile
+    )
 
     for i, ic in dict_komoditas.items():
         for j, jc in dict_komoditas.items():
@@ -62,6 +69,7 @@ def get_komoditas_mapping(df: DataFrame, min_komoditas_count_quantile: float, mi
         final_komoditas_mapping[k] = komoditas_mapping[v]
     return final_komoditas_mapping
 
+
 def get_total_berat_komoditas(df: DataFrame) -> Dict[str, int]:
     komoditas_berat = []
     for k, b in zip(df["vector_komoditas"], df["vector_berat"]):
@@ -70,7 +78,10 @@ def get_total_berat_komoditas(df: DataFrame) -> Dict[str, int]:
         elif len(b) > 0:
             komoditas_berat.append({i: b[0] for i in k})
 
-    return DataFrame(komoditas_berat).sum().sort_values(ascending=False).to_dict()
+    return (
+        DataFrame(komoditas_berat).sum().sort_values(ascending=False).to_dict()
+    )
+
 
 def show_total_berat_komoditas(total_berat_komoditas: Dict[str, int]) -> None:
     i = 1
